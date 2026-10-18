@@ -29,6 +29,11 @@ output "grafana_service_type" {
   value       = one(module.prometheus[*].grafana_service_type)
 }
 
+output "argocd_service_type" {
+  description = "Kubernetes Service type argocd-server is exposed as, when enable_argocd = true. When LoadBalancer, find the assigned address with: kubectl -n argocd get svc argocd-server"
+  value       = one(module.argocd[*].argocd_service_type)
+}
+
 output "prometheus_service_type" {
   description = "Kubernetes Service type Prometheus's web UI is exposed as, when enable_prometheus = true. When LoadBalancer, find the assigned address with: kubectl -n monitoring get svc kube-prometheus-stack-prometheus"
   value       = one(module.prometheus[*].prometheus_service_type)

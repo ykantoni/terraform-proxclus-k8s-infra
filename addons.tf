@@ -122,3 +122,22 @@ module "gpu_operator" {
     local_sensitive_file.kubeconfig,
   ]
 }
+
+module "argocd" {
+  source = "./modules/addons/argocd"
+
+  count = var.enable_argocd ? 1 : 0
+
+  argocd_version      = var.argocd_version
+  argocd_service_type = var.argocd_service_type
+
+  # Same CNI reasoning as module.longhorn. Depending on module.cilium as a
+  # whole (not just its helm_release) also means cilium_lb_ipam's address
+  # pool exists before this release's wait=true starts waiting for
+  # argocd-server's LoadBalancer IP.
+  depends_on = [
+    module.talos_cluster,
+    module.cilium,
+    local_sensitive_file.kubeconfig,
+  ]
+}

@@ -12,6 +12,8 @@ enable_longhorn = true
 # matter to Terraform, only that both are true).
 enable_prometheus = true
 
+enable_argocd = true
+
 # Off because cp1, worker2 and worker3 never reach Talos stage "running": the
 # NVIDIA extensions in the shared image wait forever for a GPU those nodes do
 # not have, so the "all nodes to finish boot sequence" check can never pass.

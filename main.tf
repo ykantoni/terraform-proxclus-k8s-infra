@@ -3,6 +3,7 @@ module "talos_cluster" {
 
   cluster_name              = var.cluster_name
   talos_version             = var.talos_version
+  kubernetes_version        = var.kubernetes_version
   talos_schematic_id_common = data.terraform_remote_state.vm_infra.outputs.talos_schematic_id_common
   talos_schematic_id_gpu    = data.terraform_remote_state.vm_infra.outputs.talos_schematic_id_gpu
   gateway                   = var.gateway

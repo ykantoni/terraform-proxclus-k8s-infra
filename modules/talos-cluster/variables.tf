@@ -6,6 +6,11 @@ variable "talos_version" {
   type = string
 }
 
+variable "kubernetes_version" {
+  description = "Kubernetes version for the machine configuration. Set explicitly: the talos provider's default tracks its own release, and can be newer than talos_version supports."
+  type        = string
+}
+
 variable "gateway" {
   type = string
 }

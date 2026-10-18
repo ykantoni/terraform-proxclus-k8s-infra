@@ -8,6 +8,12 @@ variable "talos_version" {
   type        = string
 }
 
+variable "kubernetes_version" {
+  description = "Kubernetes version for the machine configuration; must be supported by talos_version"
+  type        = string
+  default     = "1.36.0"
+}
+
 variable "gateway" {
   description = "Default network gateway"
   type        = string

@@ -86,7 +86,8 @@ data "talos_machine_configuration" "node" {
 
   machine_secrets = talos_machine_secrets.this.machine_secrets
 
-  talos_version = var.talos_version
+  talos_version      = var.talos_version
+  kubernetes_version = var.kubernetes_version
 
   config_patches = concat(
     [

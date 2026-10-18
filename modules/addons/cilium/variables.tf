@@ -10,9 +10,9 @@ variable "kubeconfig_path" {
 }
 
 variable "crd_wait_timeout" {
-  description = "Seconds to poll for the Cilium CRDs before giving up"
+  description = "Seconds to poll for the Cilium CRDs before giving up. On a fresh cluster the operator only registers them after it's scheduled and its image pulled, which took ~2 minutes in practice."
   type        = number
-  default     = 60
+  default     = 300
 }
 
 variable "crd_wait_interval" {

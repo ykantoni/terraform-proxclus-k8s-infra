@@ -21,9 +21,35 @@ destroy:
 fmt:
     terraform fmt -recursive
 
-# Write talosconfig and kubeconfig from Terraform outputs.
-generate:
+# Write talosconfig and kubeconfig from Terraform outputs, then print the UIs.
+generate: && endpoints
     terraform output -raw talosconfig > "$HOME/talosconfig"
     mkdir -p "$HOME/.kube"
     terraform output -raw kubeconfig > "$HOME/.kube/config"
     chmod 600 "$HOME/talosconfig" "$HOME/.kube/config"
+
+# Print ArgoCD, Grafana and Prometheus URLs and login credentials.
+endpoints:
+    #!/usr/bin/env bash
+    set -uo pipefail
+    k() { kubectl --kubeconfig .kube/config --request-timeout=10s "$@" 2>/dev/null; }
+    lb() { k -n "$1" get svc "$2" -o jsonpath='{.status.loadBalancer.ingress[0].ip}'; }
+    secret() { k -n "$1" get secret "$2" -o jsonpath="{.data.$3}" | base64 -d; }
+
+    ip=$(lb argocd argocd-server)
+    echo "ArgoCD:     https://${ip:-<not installed>}"
+    if [ -n "$ip" ]; then
+      pw=$(secret argocd argocd-initial-admin-secret password)
+      echo "  user:     admin"
+      echo "  password: ${pw:-<initial secret deleted; password was rotated>}"
+    fi
+
+    ip=$(lb monitoring kube-prometheus-stack-grafana)
+    echo "Grafana:    http://${ip:-<not installed>}"
+    if [ -n "$ip" ]; then
+      echo "  user:     $(secret monitoring kube-prometheus-stack-grafana admin-user)"
+      echo "  password: $(secret monitoring kube-prometheus-stack-grafana admin-password)"
+    fi
+
+    ip=$(lb monitoring kube-prometheus-stack-prometheus)
+    echo "Prometheus: http://${ip:-<not installed>}${ip:+:9090}  (no login)"

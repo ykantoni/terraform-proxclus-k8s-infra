@@ -173,6 +173,18 @@ variable "argocd_service_type" {
   default     = "LoadBalancer"
 }
 
+variable "argocd_apps_repo_url" {
+  description = "Git repo ArgoCD's root app-of-apps Application syncs apps/ from, when enable_argocd. ArgoCD reads it from the remote, so only pushed commits deploy. Empty string installs ArgoCD without a root Application."
+  type        = string
+  default     = "https://github.com/ykantoni/terraform-proxclus-k8s-apps.git"
+}
+
+variable "argocd_apps_repo_revision" {
+  description = "Branch, tag or commit of argocd_apps_repo_url the root Application tracks"
+  type        = string
+  default     = "main"
+}
+
 variable "load_balancer_ip_range" {
   description = "Inclusive address range Cilium hands to LoadBalancer services. Must be free on the node subnet."
 

@@ -42,3 +42,28 @@ resource "helm_release" "argocd" {
     yamlencode(var.argocd_extra_values),
   ]
 }
+
+# A chart rather than a kubernetes_manifest for the same reason as cilium's
+# cilium-lb-ipam: the Application CRD only exists once helm_release.argocd
+# has applied, so it can't be schema-checked at plan time.
+resource "helm_release" "root_app" {
+  count = var.apps_repo_url != "" ? 1 : 0
+
+  depends_on = [
+    helm_release.argocd,
+  ]
+
+  name      = "argocd-root-app"
+  namespace = var.namespace
+
+  chart = "${path.module}/charts/argocd-root-app"
+
+  values = [
+    yamlencode({
+      name           = var.apps_root_app_name
+      repoURL        = var.apps_repo_url
+      targetRevision = var.apps_repo_revision
+      path           = var.apps_repo_path
+    })
+  ]
+}

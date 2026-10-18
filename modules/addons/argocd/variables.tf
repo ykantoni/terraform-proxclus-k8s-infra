@@ -27,3 +27,27 @@ variable "helm_timeout" {
   type        = number
   default     = 600
 }
+
+variable "apps_repo_url" {
+  description = "Git repo ArgoCD's root app-of-apps Application syncs from. Every manifest under apps_repo_path must be an Application. Empty string skips creating the root Application."
+  type        = string
+  default     = ""
+}
+
+variable "apps_repo_revision" {
+  description = "Branch, tag or commit of apps_repo_url the root Application tracks"
+  type        = string
+  default     = "main"
+}
+
+variable "apps_repo_path" {
+  description = "Directory in apps_repo_url holding the child Application manifests"
+  type        = string
+  default     = "apps"
+}
+
+variable "apps_root_app_name" {
+  description = "Name of the root Application"
+  type        = string
+  default     = "apps"
+}

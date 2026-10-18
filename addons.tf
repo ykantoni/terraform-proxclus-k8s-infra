@@ -130,6 +130,8 @@ module "argocd" {
 
   argocd_version      = var.argocd_version
   argocd_service_type = var.argocd_service_type
+  apps_repo_url       = var.argocd_apps_repo_url
+  apps_repo_revision  = var.argocd_apps_repo_revision
 
   # Same CNI reasoning as module.longhorn. Depending on module.cilium as a
   # whole (not just its helm_release) also means cilium_lb_ipam's address

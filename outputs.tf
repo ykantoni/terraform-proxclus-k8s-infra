@@ -34,6 +34,11 @@ output "argocd_service_type" {
   value       = one(module.argocd[*].argocd_service_type)
 }
 
+output "argocd_root_app" {
+  description = "Name of ArgoCD's root app-of-apps Application, when enable_argocd and argocd_apps_repo_url are set. Check it with: kubectl -n argocd get applications"
+  value       = one(module.argocd[*].root_app_name)
+}
+
 output "prometheus_service_type" {
   description = "Kubernetes Service type Prometheus's web UI is exposed as, when enable_prometheus = true. When LoadBalancer, find the assigned address with: kubectl -n monitoring get svc kube-prometheus-stack-prometheus"
   value       = one(module.prometheus[*].prometheus_service_type)

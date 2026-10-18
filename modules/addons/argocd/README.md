@@ -10,21 +10,30 @@ This module manages:
 - the `argocd` namespace (`var.namespace`)
 - the `argo-cd` Helm release, with `server.service.type` set to
   `var.argocd_service_type`
+- when `var.apps_repo_url` is set, a root app-of-apps `Application`
+  (`charts/argocd-root-app`) syncing `var.apps_repo_path` of that repo at
+  `var.apps_repo_revision`
 
 It expects a bootstrapped cluster and the `helm`/`kubernetes` providers to be
 configured by the caller.
 
-## Scope: ArgoCD only, no app-of-apps yet
+## Root Application
 
-This module installs ArgoCD itself and nothing else — no root `Application`
-resource, no git repo wired in. There's nothing to point it at yet. Adding
-an app-of-apps bootstrap later is a natural, non-breaking follow-up: a root
-`Application` manifest, applied the same way
-`modules/addons/cilium`'s `cilium-lb-ipam` nested chart already handles
-"apply a manifest after the chart that owns its CRDs is up" (`helm_release`
-depending on `helm_release.argocd`, or a `kubectl_manifest`/`kubernetes_manifest`
-resource once ArgoCD's `Application` CRD exists) — not something this module
-needs restructuring to support.
+The root `Application` ships as a tiny local chart, the same way
+`modules/addons/cilium`'s `cilium-lb-ipam` does: its CRD only exists once
+`helm_release.argocd` has applied, so a `kubernetes_manifest` couldn't be
+schema-checked at plan time. It syncs automatically with prune and self-heal,
+and every manifest under `apps_repo_path` must itself be an `Application`.
+
+It deliberately has no `resources-finalizer`: removing the root (its Helm
+release being uninstalled or replaced) leaves the child Applications and
+their workloads running instead of cascading deletes through every app.
+The child Applications in the apps repo do carry the finalizer, so removing
+one from Git deletes that app's workloads.
+
+ArgoCD reads the repo from its remote, so only pushed commits deploy. A
+public HTTPS repo needs no credentials; a private one needs a repository
+secret in this namespace first.
 
 ## Why no privileged namespace label
 
@@ -78,8 +87,13 @@ cluster-admin access, not like Grafana's read-mostly dashboard.
 - `argocd_service_type`
 - `argocd_extra_values`
 - `helm_timeout`
+- `apps_repo_url`
+- `apps_repo_revision`
+- `apps_repo_path`
+- `apps_root_app_name`
 
 ## Outputs
 
 - `namespace`
 - `argocd_service_type`
+- `root_app_name`

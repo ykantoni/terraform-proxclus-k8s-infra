@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ required "name is required" .Values.name }}
+  namespace: {{ .Release.Namespace }}
+  # No resources-finalizer here on purpose: removing this root (a helm
+  # uninstall, or a destroy that replaces it) leaves the child Applications
+  # and their workloads running instead of cascading deletes through them.
+spec:
+  project: default
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: {{ .Release.Namespace }}
+  source:
+    repoURL: {{ required "repoURL is required" .Values.repoURL | quote }}
+    targetRevision: {{ required "targetRevision is required" .Values.targetRevision | quote }}
+    path: {{ required "path is required" .Values.path | quote }}
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

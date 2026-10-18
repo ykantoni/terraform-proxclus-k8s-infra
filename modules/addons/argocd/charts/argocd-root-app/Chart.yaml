@@ -1,0 +1,5 @@
+apiVersion: v2
+name: argocd-root-app
+description: Root app-of-apps Application pointing ArgoCD at the apps repo
+type: application
+version: 0.1.0

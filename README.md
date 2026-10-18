@@ -136,9 +136,12 @@ equivalents) are turned off.
 
 `enable_argocd = true` (default `false`) installs
 [ArgoCD](https://argo-cd.readthedocs.io/) via the argo-helm chart. This is
-ArgoCD *only*: no app-of-apps bootstrap, no git repo wired in yet — it's
-installed, not yet pointed at anything. See `modules/addons/argocd/README.md`'s
-"Scope" section for how a bootstrap `Application` would layer on top later.
+ArgoCD plus one root app-of-apps `Application`, pointed at
+`argocd_apps_repo_url` (default:
+[terraform-proxclus-k8s-apps](https://github.com/ykantoni/terraform-proxclus-k8s-apps))
+at `argocd_apps_repo_revision` (`main`), path `apps/`. From there ArgoCD
+deploys every application; Terraform deploys none of them. Set
+`argocd_apps_repo_url = ""` to install ArgoCD without the root app.
 
 `argocd_service_type` defaults to `LoadBalancer`, the same as this cluster's
 other UIs, and `argocd_version` tunes the chart version. ArgoCD's UI/API is

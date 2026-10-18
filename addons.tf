@@ -104,6 +104,7 @@ module "gpu_operator" {
 
   gpu_node_ips         = local.gpu_node_ips
   gpu_operator_version = var.gpu_operator_version
+  os_version_id        = var.talos_version
   enable_dcgm_exporter = var.enable_dcgm_exporter
   enable_gfd           = var.enable_gfd
   enable_prometheus    = var.enable_prometheus

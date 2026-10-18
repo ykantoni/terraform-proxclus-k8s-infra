@@ -60,3 +60,8 @@ variable "helm_timeout" {
   type        = number
   default     = 300
 }
+
+variable "os_version_id" {
+  description = "Value for the feature.node.kubernetes.io/system-os_release.VERSION_ID label on GPU nodes, which the Operator requires in place of NFD. The Talos version."
+  type        = string
+}

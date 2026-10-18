@@ -88,9 +88,16 @@ resource "kubernetes_labels" "gpu_node" {
     name = local.gpu_ip_to_node_name[each.value]
   }
 
+  # system-os_release.ID/VERSION_ID stand in for what NFD would publish: the
+  # ClusterPolicy controller refuses to initialize without both on the first
+  # GPU node (getGPUNodeOSInfo), so without them no operand, device plugin or
+  # RuntimeClass is ever created. They only pick the driver image tag, which
+  # is unused with driver.enabled = false.
   labels = {
-    "feature.node.kubernetes.io/pci-10de.present" = "true"
-    (var.gpu_node_label)                          = "true"
+    "feature.node.kubernetes.io/pci-10de.present"             = "true"
+    "feature.node.kubernetes.io/system-os_release.ID"         = "talos"
+    "feature.node.kubernetes.io/system-os_release.VERSION_ID" = var.os_version_id
+    (var.gpu_node_label)                                      = "true"
   }
 
   force = true

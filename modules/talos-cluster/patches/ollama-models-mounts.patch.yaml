@@ -1,0 +1,10 @@
+machine:
+  kubelet:
+    extraMounts:
+      - destination: /var/lib/ollama-models
+        type: bind
+        source: /var/lib/ollama-models
+        options:
+          - bind
+          - rshared
+          - rw

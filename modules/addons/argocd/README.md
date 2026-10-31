@@ -29,7 +29,10 @@ It deliberately has no `resources-finalizer`: removing the root (its Helm
 release being uninstalled or replaced) leaves the child Applications and
 their workloads running instead of cascading deletes through every app.
 The child Applications in the apps repo do carry the finalizer, so removing
-one from Git deletes that app's workloads.
+one from Git deletes that app's workloads. Only ArgoCD can clear that
+finalizer, so `just destroy` deletes the Applications before uninstalling it
+(`just apps-destroy`); a bare `tofu destroy` leaves the namespace stuck in
+Terminating.
 
 ArgoCD reads the repo from its remote, so only pushed commits deploy. A
 public HTTPS repo needs no credentials; a private one needs a repository

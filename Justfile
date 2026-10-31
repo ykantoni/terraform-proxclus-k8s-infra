@@ -70,7 +70,7 @@ generate: && endpoints postgres-secrets
     {{tf}} output -raw kubeconfig > "$HOME/.kube/config"
     chmod 600 "$HOME/talosconfig" "$HOME/.kube/config"
 
-# Print ArgoCD, Grafana and Prometheus URLs and login credentials.
+# Print ArgoCD, Grafana, Prometheus, Hubble and Open WebUI URLs and logins.
 endpoints:
     #!/usr/bin/env bash
     set -uo pipefail
@@ -95,6 +95,20 @@ endpoints:
 
     ip=$(lb monitoring kube-prometheus-stack-prometheus)
     echo "Prometheus: http://${ip:-<not installed>}${ip:+:9090}  (no login)"
+
+    ip=$(lb kube-system hubble-ui)
+    echo "Hubble UI:  http://${ip:-<not installed>}  (no login)"
+
+    # No stored credentials: the first account to sign up becomes the admin.
+    ip=$(lb ollama open-webui)
+    echo "Open WebUI: http://${ip:-<not installed>}"
+    if [ -n "$ip" ]; then
+      if curl -s -m 5 "http://$ip/api/config" | grep -q '"onboarding":true'; then
+        echo "  login:    <no accounts yet; the first to sign up becomes admin>"
+      else
+        echo "  login:    the account you created (stored in Open WebUI, not a Secret)"
+      fi
+    fi
 
 # Create the plain postgres app's credential Secrets if missing, then print them.
 # Both sides share a password so the standby can replicate from the primary.
